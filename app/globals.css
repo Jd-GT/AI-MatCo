@@ -1,26 +1,258 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Colors */
+  --color-neon: #00ff88;
+  --color-neon-dim: #00cc6a;
+  --color-neon-glow: rgba(0, 255, 136, 0.15);
+  --color-electric: #00c8ff;
+  --color-electric-dim: #0099cc;
+  --color-bg: #050505;
+  --color-surface: #0d0d0d;
+  --color-surface-2: #141414;
+  --color-surface-3: #1a1a1a;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(0, 255, 136, 0.3);
+  --color-text: #e8e8e8;
+  --color-text-muted: #666666;
+  --color-text-faint: #333333;
+
+  /* Badge colors */
+  --color-badge-quality: #ffd700;
+  --color-badge-speed: #00c8ff;
+  --color-badge-free: #00ff88;
+  --color-badge-open: #a78bfa;
+  --color-badge-cheap: #fb923c;
+  --color-badge-multi: #f472b6;
+  --color-badge-reason: #60a5fa;
+  --color-badge-spec: #34d399;
+  --color-badge-priv: #94a3b8;
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --radius-card: 8px;
+  --radius-chip: 4px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* Scanline subtle effect */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 136, 0.008) 2px,
+    rgba(0, 255, 136, 0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Terminal Cursor ──────────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.1em;
+  background: var(--color-neon);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+
+/* ─── Fade-in staggered ────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+/* ─── Card Hover ───────────────────────────────────────────────────────────── */
+.model-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.model-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at top left,
+    var(--color-neon-glow),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.model-card:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 255, 136, 0.08), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.model-card:hover::before {
+  opacity: 1;
+}
+
+/* ─── Search Input ─────────────────────────────────────────────────────────── */
+.search-input {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  width: 100%;
+  padding: 1rem 1.25rem 1rem 3.25rem;
+  border-radius: var(--radius-card);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--color-neon);
+  background: var(--color-surface-3);
+  box-shadow: 0 0 0 3px var(--color-neon-glow), 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ─── Category Chip ────────────────────────────────────────────────────────── */
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.category-chip:hover {
+  border-color: var(--color-neon);
+  color: var(--color-neon);
+  background: var(--color-neon-glow);
+}
+
+.category-chip.active {
+  border-color: var(--color-neon);
+  color: var(--color-neon);
+  background: var(--color-neon-glow);
+  box-shadow: 0 0 12px var(--color-neon-glow);
+}
+
+/* ─── Badges ───────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-chip);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge-quality  { background: rgba(255, 215, 0, 0.12);  color: var(--color-badge-quality); border: 1px solid rgba(255, 215, 0, 0.2); }
+.badge-speed    { background: rgba(0, 200, 255, 0.12);  color: var(--color-badge-speed);   border: 1px solid rgba(0, 200, 255, 0.2); }
+.badge-free     { background: rgba(0, 255, 136, 0.12);  color: var(--color-badge-free);    border: 1px solid rgba(0, 255, 136, 0.2); }
+.badge-open     { background: rgba(167, 139, 250, 0.12); color: var(--color-badge-open);   border: 1px solid rgba(167, 139, 250, 0.2); }
+.badge-cheap    { background: rgba(251, 146, 60, 0.12);  color: var(--color-badge-cheap);  border: 1px solid rgba(251, 146, 60, 0.2); }
+.badge-multi    { background: rgba(244, 114, 182, 0.12); color: var(--color-badge-multi);  border: 1px solid rgba(244, 114, 182, 0.2); }
+.badge-reason   { background: rgba(96, 165, 250, 0.12);  color: var(--color-badge-reason); border: 1px solid rgba(96, 165, 250, 0.2); }
+.badge-spec     { background: rgba(52, 211, 153, 0.12);  color: var(--color-badge-spec);   border: 1px solid rgba(52, 211, 153, 0.2); }
+.badge-priv     { background: rgba(148, 163, 184, 0.12); color: var(--color-badge-priv);   border: 1px solid rgba(148, 163, 184, 0.2); }
+
+/* ─── Tier indicator ──────────────────────────────────────────────────────── */
+.tier-s { color: var(--color-neon); }
+.tier-a { color: var(--color-electric); }
+.tier-b { color: var(--color-text-muted); }
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-text-faint); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-neon-dim); }
+
+/* ─── Selection ────────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--color-neon-glow);
+  color: var(--color-neon);
 }

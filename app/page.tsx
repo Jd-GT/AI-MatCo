@@ -1,65 +1,216 @@
-import Image from "next/image";
+'use client'
+
+import { useState, useMemo, useCallback } from 'react'
+import Hero from '@/components/Hero'
+import SearchBar from '@/components/SearchBar'
+import CategoryGrid from '@/components/CategoryGrid'
+import ResultsPanel from '@/components/ResultsPanel'
+import { matchQuery, matchByCategory, MatchResult } from '@/lib/matcher'
+import { ModelCategory } from '@/lib/models'
 
 export default function Home() {
+  const [query, setQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState<ModelCategory | null>(null)
+
+  // Derive results during render — no useEffect needed (rerender-derived-state-no-effect)
+  const results: MatchResult[] = useMemo(() => {
+    if (activeCategory) return matchByCategory(activeCategory)
+    if (query.trim().length >= 2) return matchQuery(query)
+    return []
+  }, [query, activeCategory])
+
+  const showResults = activeCategory !== null || query.trim().length >= 2
+
+  // Stable callbacks — rerender-functional-setstate
+  const handleQueryChange = useCallback((value: string) => {
+    setQuery(value)
+    if (value) setActiveCategory(null)
+  }, [])
+
+  const handleCategorySelect = useCallback((category: ModelCategory | null) => {
+    setActiveCategory(category)
+    if (category) setQuery('')
+  }, [])
+
+  const handleClear = useCallback(() => {
+    setQuery('')
+    setActiveCategory(null)
+  }, [])
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div
+      style={{
+        position: 'relative',
+        zIndex: 1,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      {/* Ambient glow top */}
+      <div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          top: '-10%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '60vw',
+          height: '40vh',
+          background:
+            'radial-gradient(ellipse, rgba(0,255,136,0.04) 0%, transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Hero */}
+      <Hero />
+
+      {/* Main content */}
+      <main
+        style={{
+          width: '100%',
+          maxWidth: '900px',
+          padding: '0 1.25rem 4rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '2rem',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Search */}
+        <SearchBar
+          value={query}
+          onChange={handleQueryChange}
+          onClear={handleClear}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        {/* Category chips */}
+        <CategoryGrid
+          activeCategory={activeCategory}
+          onSelect={handleCategorySelect}
+        />
+
+        {/* Separator */}
+        {showResults && (
+          <div
+            style={{
+              width: '100%',
+              height: '1px',
+              background:
+                'linear-gradient(to right, transparent, var(--color-border), transparent)',
+            }}
+          />
+        )}
+
+        {/* Results */}
+        <div style={{ width: '100%' }}>
+          <ResultsPanel
+            results={results}
+            query={query}
+            isVisible={showResults}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Empty state — welcome */}
+        {!showResults && (
+          <div
+            className="animate-fade-in"
+            style={{
+              textAlign: 'center',
+              padding: '2rem 1rem',
+              width: '100%',
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            {/* Example queries */}
+            <p
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.65rem',
+                color: 'var(--color-text-faint)',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                marginBottom: '1rem',
+              }}
+            >
+              Ejemplos de busqueda
+            </p>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.5rem',
+                justifyContent: 'center',
+              }}
+            >
+              {[
+                'Quiero hacer un chatbot',
+                'Analizar datos de ventas',
+                'Crear logo para mi empresa',
+                'Traducir documentos al ingles',
+                'Componer una cancion',
+                'Resolver ecuaciones diferenciales',
+                'Revisar un contrato',
+                'Preparar mi examen de fisica',
+              ].map((example) => (
+                <button
+                  key={example}
+                  onClick={() => handleQueryChange(example)}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.72rem',
+                    color: 'var(--color-text-faint)',
+                    border: '1px solid var(--color-border)',
+                    background: 'none',
+                    padding: '0.375rem 0.875rem',
+                    borderRadius: '9999px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-neon)'
+                    e.currentTarget.style.color = 'var(--color-neon)'
+                    e.currentTarget.style.background = 'var(--color-neon-glow)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-border)'
+                    e.currentTarget.style.color = 'var(--color-text-faint)'
+                    e.currentTarget.style.background = 'none'
+                  }}
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
+
+      {/* Footer */}
+      <footer
+        style={{
+          width: '100%',
+          borderTop: '1px solid var(--color-border)',
+          padding: '1.5rem',
+          textAlign: 'center',
+          marginTop: 'auto',
+        }}
+      >
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.65rem',
+            color: 'var(--color-text-faint)',
+            letterSpacing: '0.08em',
+          }}
+        >
+          AIMatch · Datos curados · Sin rastreo · Sin cookies
+        </p>
+      </footer>
     </div>
-  );
+  )
 }
