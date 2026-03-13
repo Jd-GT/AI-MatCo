@@ -27,8 +27,8 @@ AI MatCo es un directorio interactivo de modelos de Inteligencia Artificial que 
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/TU_USUARIO/aimatco.git
-cd aimatco
+git clone https://github.com/Jd-GT/AI-MatCo.git
+cd AI-MatCo
 
 # Instalar dependencias
 npm install
