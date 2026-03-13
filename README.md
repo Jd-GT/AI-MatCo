@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI MatCo
 
-## Getting Started
+🔗 **Demo en vivo:** https://aimatco.vercel.app
 
-First, run the development server:
+---
+
+## Descripcion
+
+AI MatCo es un directorio interactivo de modelos de Inteligencia Artificial que te ayuda a encontrar la mejor herramienta de IA para cada tarea. Ya sea que necesites ayuda con programacion, generar imagenes, crear musica, analizar datos o redactar documentos, AI MatCo te recomienda el modelo mas apropiado con razones detalladas y precios.
+
+## Caracteristicas
+
+- **Busqueda inteligente**: Encuentra modelos de IA escribiendo lo que necesitas hacer en lenguaje natural
+- **Categorias organizadas**: 18 categorias incluyendo Coding, Ciencia de Datos, Marketing, Traduccion, Imagenes, Video, Audio, Medicina, Legal, Finanzas y mas
+- **Comparativa detallada**: Cada modelo incluye razones especificas por las que es recomendado para cada categoria
+- **Badges informativos**: Identifica rapidamente modelos gratuitos, open-source, los mas rapidos, mejor calidad, etc.
+- **Precios claros**: Costs clearly displayed for each model
+- **Interfaz moderna**: Diseno limpio y responsive construido con Next.js y Tailwind CSS
+
+## Tecnologias
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Estilos**: Tailwind CSS v4
+- **Despliegue**: Vercel
+
+## Instalacion Local
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/TU_USUARIO/aimatco.git
+cd aimatco
+
+# Instalar dependencias
+npm install
+
+# Ejecutar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Despliegue
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+El proyecto esta desplegado automaticamente en Vercel:
 
-## Learn More
+1. Haz fork de este repositorio
+2. Ve a [Vercel](https://vercel.com)
+3. Importa el repositorio
+4. Despliegue automatico
 
-To learn more about Next.js, take a look at the following resources:
+## Contribuciones
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Las contribuciones son bienvenidas. Para contribuir:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Haz fork del proyecto
+2. Crea una rama (`git checkout -b feature/nueva-caracteristica`)
+3. Haz commit de tus cambios (`git commit -m 'Add nueva caracteristica'`)
+4. Push a la rama (`git push origin feature/nueva-caracteristica`)
+5. Abre un Pull Request
 
-## Deploy on Vercel
+## Licencia
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este proyecto esta bajo la licencia MIT.
